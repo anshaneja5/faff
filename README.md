@@ -40,7 +40,7 @@ A modern, real-time chat application built with React, Node.js, PostgreSQL, and 
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/anshaneja5/faff
 cd faff-Assignment
 ```
 
