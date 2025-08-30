@@ -1,0 +1,89 @@
+# Cursor Rules for Chat App Project
+
+1. **Tech Stack**
+   - Backend: Node.js + Express
+   - Database: PostgreSQL (Supabase/Neon free tier for dev)
+   - Realtime: Socket.IO
+   - Frontend: React (later step)
+   - Deployment: Backend → Render, Frontend → Vercel
+   - Containerization: Dockerfile for backend
+
+2. **Code Style**
+   - Use modern ES6+ syntax
+   - Organize code into /src with subfolders:
+     - /routes → API routes
+     - /models → DB queries or ORM logic
+     - /db.js → DB connection setup
+     - /index.js → server entry point
+   - Prefer async/await over promises
+   - Use environment variables for secrets (don’t hardcode DB URLs or API keys)
+
+3. **Database**
+   - users (id UUID, name TEXT, email TEXT UNIQUE, created_at TIMESTAMP)
+   - messages (id UUID, sender_id UUID, receiver_id UUID, message TEXT, created_at TIMESTAMP)
+
+4. **API Requirements**
+   - POST /users → create user
+   - POST /messages → send message
+   - GET /messages?userId=abc123&limit=99 → recent chats
+   - Later: GET /semantic-search?userId=...&q=... → semantic search
+
+5. **Realtime**
+   - Use Socket.IO
+   - When a message is sent via POST /messages, emit it in real-time to the receiver.
+
+6. **Testing**
+   - Provide simple curl examples or sample requests in comments for each API.
+
+7. **Docker**
+   - Write a Dockerfile for backend
+   - Base: node:18
+   - Copy package.json + install deps
+   - Copy code
+   - Expose port 3000
+   - CMD: `node src/index.js`
+
+8. **General**
+   - Keep code minimal but production-ready
+   - No unnecessary dependencies unless justified
+   - Add inline comments for clarity
+
+# Updating Cursor Rules for Part 2
+In addition to the previous rules, apply the following new ones:
+
+# Cursor Rules for Part 2 (Semantic Search)
+
+1. Embeddings
+   - Use OpenAI text-embedding-3-small
+   - Use environment variable OPENAI_API_KEY
+   - Put embedding logic in /src/semantic.js
+
+2. Vector Database
+   - Use Qdrant Cloud
+   - Collection: messages_embeddings
+   - Fields: id, userId, messageId, text, timestamp, embedding
+   - Use env vars: QDRANT_URL, QDRANT_API_KEY
+
+3. Backend
+   - Modify POST /messages → after saving in Postgres, generate embedding and insert into Qdrant
+   - Add new route: GET /semantic-search?userId=...&q=...
+     → Generate embedding for q
+     → Query Qdrant
+     → Return top 10 results with { text, score, timestamp }
+
+4. Frontend
+   - Add a search bar in Chat page
+   - On submit, call semantic-search endpoint
+   - Display results (message text + timestamp) in a results panel
+   - Keep UI minimal, Tailwind for styling
+
+5. Documentation
+   - Add SEMANTIC_SEARCH.md explaining:
+     - How semantic search works
+     - Why embeddings + vector DB
+     - How this design would scale (batching, async workers, sharding DB, caching)
+
+6. General
+   - Use async/await
+   - Clean modular code
+   - Add inline comments
